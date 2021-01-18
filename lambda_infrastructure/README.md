@@ -1,0 +1,1 @@
+Infrastructure required to run a container in a lambda function.
