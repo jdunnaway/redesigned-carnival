@@ -7,5 +7,8 @@ SHELL=/bin/bash
 default:
 	echo "No make target"
 
+plan:
+	terraform plan
+
 deploy:
 	terraform apply -auto-approve
