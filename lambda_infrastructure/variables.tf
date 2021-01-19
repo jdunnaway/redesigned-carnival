@@ -5,5 +5,4 @@ variable "region" {
 
 variable "account" {
   type = string
-  default = "619481458632"
 }
