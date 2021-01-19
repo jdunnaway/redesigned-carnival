@@ -27,25 +27,26 @@ resource "aws_iam_role" "lambda_role" {
 EOF
 }
 
-#resource "aws_lambda_function" "stream_consumer_lambda" {
-#  filename      = "${path.module}/empty_function.zip"
-#  function_name = "stream-consumer-function"
-#  role          = "${aws_iam_role.stream_consumer_lambda_role.arn}"
-#  handler       = "index.handler"
+resource "aws_lambda_function" "container-demo-lambda" {
+ image_uri      = "${var.account}.dkr.ecr.us-east-1.amazonaws.com/lambda-container-demo-repo:latest"
+ function_name = "container-demo-lambda"
+ role          = "${aws_iam_role.lambda_role.arn}"
+ handler       = "app.handler"
+ package_type  = "Image"
 
-#  runtime = "nodejs10.x"
+ runtime = "nodejs12.x"
 
-#  tracing_config {
-#    mode = "Active"
-#  }
+ tracing_config {
+   mode = "Active"
+ }
 
-#  depends_on    = ["aws_iam_role_policy_attachment.lambda_logs", "aws_cloudwatch_log_group.lambda_demo"]
-#}
+ depends_on    = ["aws_iam_role_policy_attachment.lambda_logs", "aws_cloudwatch_log_group.lambda_demo"]
+}
 
 # This is to optionally manage the CloudWatch Log Group for the Lambda Function.
 # If skipping this resource configuration, also add "logs:CreateLogGroup" to the IAM policy below.
 resource "aws_cloudwatch_log_group" "lambda_demo" {
-  name              = "/aws/lambda/stream-consumer-function"
+  name              = "/aws/lambda/aws-container-demo"
   retention_in_days = 1
 }
 
@@ -74,6 +75,6 @@ EOF
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_logs" {
-  role = "${aws_iam_role.stream_consumer_lambda_role.name}"
+  role = "${aws_iam_role.lambda_role.name}"
   policy_arn = "${aws_iam_policy.lambda_permissions.arn}"
 }
